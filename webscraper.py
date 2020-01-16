@@ -8,13 +8,16 @@ def display_points(points, tokens):
 points = 30
 tokens = 0
 while points > 0:
+	if not exit:
+		break
 	# Filter through wiki pages until we find an artical with a contents page.
 	try:
 		req = requests.get("https://en.wikipedia.org/wiki/Special:Random").text
 		soup = BeautifulSoup(req, 'lxml')
-		toctitle = soup.find('div', class_='toctitle')
+		toctitle = soup.find('div', class_='toctitle').text
 		first_paragraph = soup.find('div', id='mw-content-text').p.text
 	except AttributeError:
+		print('Searching...')
 		continue
 
 	# Display the first paragraph to the user with all of the answers 
@@ -40,7 +43,7 @@ while points > 0:
 				break
 			elif user_input == 'n':
 				print('Fine... ya big baby.')
-				print('The answer was ' + answer + ' by the way... its not that hard.')
+				print('The answer was ' + '\'' +  answer + '\'' + ' by the way... its not that hard.')
 				display_points(points, tokens)
 				break
 			elif user_input.isdigit():
@@ -73,22 +76,8 @@ while points > 0:
 				display_points(points, tokens)
 				continue
 	else:
+		print('Searching...')
 		continue
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
