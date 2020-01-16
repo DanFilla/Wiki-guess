@@ -1,10 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-
-def get_next_paragraph(count):
-	#toclevel-1 tocsection-'count'
-	next_paragraph_title = toctitle.find('li', class_='toclevel-1 tocsection-' + str(count)).text[2:]
-
+import string
 
 
 
@@ -14,7 +10,7 @@ while 1:
 	try:
 		req = requests.get("https://en.wikipedia.org/wiki/Special:Random").text
 		soup = BeautifulSoup(req, 'lxml')
-		toctitle = soup.find('div', class_='toctitle')
+		toctitle = soup.find('div', class_='toctitle').text
 	except AttributeError:
 		continue
 
@@ -22,13 +18,19 @@ while 1:
 	# replaced by '-'
 	answer = soup.find('h1').text
 	answer_list = answer.lower().split()
-	print(answer)
 	first_paragraph = soup.find('div', id='mw-content-text').p.text
+
+	# Make sure all letters in the title are in the english alphabet
+	for letter in answer:
+		if letter not in string.ascii_lowercase or letter not in string.punctuation:
+			continue
 
 	# Make sure that the first_paragraph is not empty.
 	if first_paragraph.strip() and len(answer_list) <= 3:
 
 		for word in answer_list:
+			if len(word) == 1:
+				continue
 			first_paragraph = first_paragraph.lower().replace(word, '-'.center(len(word), '-'))
 
 		print(first_paragraph)
@@ -37,7 +39,7 @@ while 1:
 		while 1:
 			user_input = input('What is your guess?...').lower()
 			if user_input == 'next':
-				print(get_next_paragraph(para))
+				print('The answer was ' + answer)
 				continue
 			elif user_input == answer.lower():
 				print('You got it correct!')
