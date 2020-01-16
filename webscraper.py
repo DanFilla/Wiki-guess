@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 
 def display_points(points, tokens):
+	'''display the points and tokens to the user'''
 	print('You have ' + str(points) + ' points and ' + str(tokens) + ' tokens.')
 
 
@@ -16,6 +17,7 @@ while points > 0:
 		soup = BeautifulSoup(req, 'lxml')
 		toctitle = soup.find('div', class_='toctitle').text
 		first_paragraph = soup.find('div', id='mw-content-text').p.text
+		print('Searching...')
 	except AttributeError:
 		print('Searching...')
 		continue
@@ -26,7 +28,7 @@ while points > 0:
 	answer_list = answer.lower().split()
 
 	# Make sure that the first_paragraph is not empty.
-	if first_paragraph.strip() and len(answer_list) <= 3:
+	if len(first_paragraph.split()) > 30 and len(answer_list) <= 3:
 
 		for word in answer_list:
 			first_paragraph = first_paragraph.lower().replace(word, '-'.center(len(word), '-'))
@@ -36,6 +38,7 @@ while points > 0:
 		# Loop for each wiki page the user can guess on.
 		while points > 0:
 			user_input = input('What is your guess?...').lower()
+
 			if user_input == 'next':
 				points -= 5
 				print('The correct answer is ' + answer)
