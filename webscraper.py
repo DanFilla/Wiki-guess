@@ -8,7 +8,7 @@ def get_next_paragraph(count):
 
 
 
-para = 1
+points = 1
 while 1:
 	# Filter through wiki pages until we find an artical with a contents page.
 	try:
@@ -37,14 +37,19 @@ while 1:
 		while 1:
 			user_input = input('What is your guess?...').lower()
 			if user_input == 'next':
-				print(get_next_paragraph(para))
+				points += 1
+				print('The correct answer is ' + answer)
+				print('You have ' + str(points) + ' points.')
 				continue
 			elif user_input == answer.lower():
+				points -= 10
 				print('You got it correct!')
+				print('Your score is ' + str(points))
 				break
 			elif user_input in answer_list:
 				print("Alright close enough, I'll give it to you...")
 				print('The actuall answer is ' + answer)
+				print('Your score is ' + str(points))
 				break
 			else:
 				continue
