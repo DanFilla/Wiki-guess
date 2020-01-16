@@ -1,13 +1,19 @@
 from bs4 import BeautifulSoup
 import requests
 
-points = 0
-while exit:
+def display_points(points, tokens):
+	print('You have ' + str(points) + ' points and ' + str(tokens) + ' tokens.')
+
+
+points = 30
+tokens = 0
+while points > 0:
 	# Filter through wiki pages until we find an artical with a contents page.
 	try:
 		req = requests.get("https://en.wikipedia.org/wiki/Special:Random").text
 		soup = BeautifulSoup(req, 'lxml')
 		toctitle = soup.find('div', class_='toctitle')
+		first_paragraph = soup.find('div', id='mw-content-text').p.text
 	except AttributeError:
 		continue
 
@@ -15,7 +21,6 @@ while exit:
 	# replaced by '-'
 	answer = soup.find('h1').text
 	answer_list = answer.lower().split()
-	first_paragraph = soup.find('div', id='mw-content-text').p.text
 
 	# Make sure that the first_paragraph is not empty.
 	if first_paragraph.strip() and len(answer_list) <= 3:
@@ -26,38 +31,46 @@ while exit:
 		print(first_paragraph)
 
 		# Loop for each wiki page the user can guess on.
-		while 1:
+		while points > 0:
 			user_input = input('What is your guess?...').lower()
 			if user_input == 'next':
-				points += 5
+				points -= 5
 				print('The correct answer is ' + answer)
-				print('You have ' + str(points) + ' points.')
+				display_points(points, tokens)
+				break
+			elif user_input == 'n':
+				print('Fine... ya big baby.')
+				print('The answer was ' + answer + ' by the way... its not that hard.')
+				display_points(points, tokens)
 				break
 			elif user_input.isdigit():
-				points += int(user_input)
+				points -= int(user_input)
 				print(str(user_input) + ' have been added to your score.')
-				print('You now have a score of ' + str(points))
+				display_points(points, tokens)
 			elif user_input == 'q':
 				exit = False
-				print('You have a score of ' + str(points))
+				display_points(points, tokens)
 				break
 			elif len(user_input) <= 2:
 				print('you have to guess a longer word...')
 				continue
 			elif user_input == answer.lower():
-				points -= 10
+				points += 10
+				tokens += 1
 				print('You got it correct!')
-				print('Your score is ' + str(points))
+				display_points(points, tokens)
 				break
 			elif user_input in answer_list:
-				points += 1
+				points -= 1
+				tokens += 1
 				print("Alright close enough, I'll give it to you...")
 				print('The actuall answer is ' + answer)
-				print('Your score is ' + str(points))
+				display_points(points, tokens)
 				break
 			else:
-				points += 2
+				points -= 2
 				print('Wrong!!')
+				display_points(points, tokens)
 				continue
 	else:
 		continue
